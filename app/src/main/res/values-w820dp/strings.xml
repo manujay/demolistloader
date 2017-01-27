@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="id">id</string>
+    <string name="provider">provider</string>
+    <string name="latitude">latitude</string>
+    <string name="longitude">longitude</string>
+    <string name="speed">speed</string>
+    <string name="time">time</string>
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+</resources>
