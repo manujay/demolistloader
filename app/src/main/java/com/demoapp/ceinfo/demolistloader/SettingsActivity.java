@@ -75,6 +75,42 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     // Bool to track whether the app is already resolving an error
     private boolean mResolvingError = false;
     private LocationManager locationManager;
+    private final android.location.LocationListener gpsLocationListener = new android.location.LocationListener() {
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            switch (status) {
+                case LocationProvider.AVAILABLE:
+                    Log.e(LOG_TAG, " @LOC_STATUS : GPS available again\n");
+                    break;
+                case LocationProvider.OUT_OF_SERVICE:
+                    Log.e(LOG_TAG, " @LOC_STATUS : GPS out of service\n");
+                    break;
+                case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                    Log.e(LOG_TAG, " @LOC_STATUS : GPS temporarily unavailable\n");
+                    break;
+            }
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(LOG_TAG, " @LOC_STATUS : GPS Provider Enabled\n");
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(LOG_TAG, " @LOC_STATUS : GPS Provider Disabled\n");
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            locationManager.removeUpdates(networkLocationListener);
+            Log.e(LOG_TAG, " @LOC_STATUS : New GPS location: "
+                    + String.format("%9.6f", location.getLatitude()) + ", "
+                    + String.format("%9.6f", location.getLongitude()) + "\n");
+            UpdateUI(location);
+        }
+    };
     private final android.location.LocationListener networkLocationListener =
             new android.location.LocationListener() {
 
@@ -113,42 +149,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                     UpdateUI(location);
                 }
             };
-    private final android.location.LocationListener gpsLocationListener = new android.location.LocationListener() {
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            switch (status) {
-                case LocationProvider.AVAILABLE:
-                    Log.e(LOG_TAG, " @LOC_STATUS : GPS available again\n");
-                    break;
-                case LocationProvider.OUT_OF_SERVICE:
-                    Log.e(LOG_TAG, " @LOC_STATUS : GPS out of service\n");
-                    break;
-                case LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    Log.e(LOG_TAG, " @LOC_STATUS : GPS temporarily unavailable\n");
-                    break;
-            }
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.e(LOG_TAG, " @LOC_STATUS : GPS Provider Enabled\n");
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.e(LOG_TAG, " @LOC_STATUS : GPS Provider Disabled\n");
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            locationManager.removeUpdates(networkLocationListener);
-            Log.e(LOG_TAG, " @LOC_STATUS : New GPS location: "
-                    + String.format("%9.6f", location.getLatitude()) + ", "
-                    + String.format("%9.6f", location.getLongitude()) + "\n");
-            UpdateUI(location);
-        }
-    };
     private boolean isGPSEnabled;
     private boolean isNetworkEnabled;
     private boolean hasLocationSettings = false;
@@ -491,11 +491,21 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     @Override
     protected void onStart() {
         mGoogleApiClient.connect();
+
+        if (mGoogleApiClient.isConnected() && !mRequestLocationUpdates) { //does not work since mGoogleApiClient.isConnected return false
+            startLocationUpdates();
+        }
+
         super.onStart();
     }
 
     @Override
     protected void onStop() {
+
+        if (mGoogleApiClient.isConnected() && mRequestLocationUpdates) {
+            stopLocationUpdates();
+        }
+
         mGoogleApiClient.disconnect();//disconnect after
         super.onStop();
     }
