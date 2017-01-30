@@ -568,6 +568,22 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         super.onStop();
     }
 
+    @Override
+    protected void onDestroy() {
+
+        // Destroys variables and references, and catches Exceptions
+        try {
+            getSupportLoaderManager().destroyLoader(INIT_LOADER_ID);
+            if (locationAdapter != null) {
+                locationAdapter.changeCursor(null);
+                locationAdapter = null;
+            }
+        } catch (Throwable localThrowable) {
+        }
+
+        super.onDestroy();
+    }
+
     private void stopLocationUpdates() {
 //        if (mGoogleApiClient.isConnected() && mRequestLocationUpdatesFused)//stop location updates
 //            stopLocationUpdatesFused();

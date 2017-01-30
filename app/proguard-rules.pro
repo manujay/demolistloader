@@ -15,3 +15,49 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keep class sun.misc.Unsafe { *; }
+-keep class com.google.gson.stream.** { *; }
+
+
+-keep class com.mmi.apis.distance.** {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.mmi.apis.place.geocoder.** {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.mmi.apis.place.reversegeocode.** {
+    <fields>;
+    <methods>;
+}
+
+-keep class com.mmi.apis.place.** {
+    <fields>;
+    <methods>;
+}
+
+
+
+-keep class com.mmi.apis.routing.** {
+    <fields>;
+    <methods>;
+}
+-keep class com.mmi.apis.place.autosuggest.** {
+    <fields>;
+    <methods>;
+}
+-keep class com.mmi.apis.place.details.** {
+    <fields>;
+    <methods>;
+}
+-keep class com.mmi.apis.place.nearby.** {
+    <fields>;
+    <methods>;
+}

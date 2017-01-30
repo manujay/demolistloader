@@ -1,7 +1,6 @@
 package com.demoapp.ceinfo.demolistloader.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -70,14 +69,9 @@ public class UserLocationFragment extends Fragment implements MapViewConstants {
         mMapView.post(new Runnable() {
             @Override
             public void run() {
-                new Handler().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mMapView.setCenter(geoPoint);
-                        mMapView.setZoom(mMapView.getMaxZoomLevel());
-                        mMapView.animateTo(geoPoint);
-                    }
-                });
+                mMapView.setCenter(geoPoint);
+                mMapView.setZoom(mMapView.getMaxZoomLevel());
+                mMapView.animateTo(geoPoint);
             }
         });
         mMapView.invalidate();
