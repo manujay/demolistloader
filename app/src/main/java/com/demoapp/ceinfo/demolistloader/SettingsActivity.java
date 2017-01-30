@@ -48,7 +48,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStates;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import java.util.Arrays;
@@ -71,6 +70,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     // Unique tag for the error dialog fragment
     private static final String DIALOG_ERROR = "dialog_error";
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
+    private static final int REQUEST_LOCATION_SETTINGS = 02011;
     private static long MIN_TIME_BW_UPDATES = 1000; // 1sec
     private final android.location.LocationListener gpsLocationListener = new android.location.LocationListener() {
 
@@ -389,7 +389,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onResult(@NonNull LocationSettingsResult result) {
                 final Status status = result.getStatus();
-                final LocationSettingsStates states = result.getLocationSettingsStates();
                 switch (status.getStatusCode()) {
                     case LocationSettingsStatusCodes.SUCCESS:
                         // All location settings are satisfied. The client can
@@ -499,8 +498,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MIN_TIME_BW_UPDATES, MIN_DISTANCE_BW_UPDATES, networkLocationListener);
 
-            mRequestLocationUpdatesNotFused = true; //requesting not fused
-
+            mRequestLocationUpdatesNotFused = !mRequestLocationUpdatesNotFused; //requesting not fused
         }
     }
 
@@ -543,7 +541,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         if (!mRequestLocationUpdatesNotFused)
             startLocationUpdatesNotFused();
 
-        mRequestLocationUpdates = true;
+        mRequestLocationUpdates = !mRequestLocationUpdates && mRequestLocationUpdatesNotFused;
         onButtonClick();
         populateLoclist();
     }
