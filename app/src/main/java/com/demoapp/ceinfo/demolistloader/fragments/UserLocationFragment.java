@@ -1,5 +1,7 @@
 package com.demoapp.ceinfo.demolistloader.fragments;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -74,6 +76,16 @@ public class UserLocationFragment extends Fragment implements MapViewConstants {
                 mMapView.animateTo(geoPoint);
             }
         });
+
+        setHardwareAccelerationOff();
+
+        mMapView.setMultiTouchControls(true);
         mMapView.invalidate();
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void setHardwareAccelerationOff() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+            mMapView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 }

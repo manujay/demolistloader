@@ -14,7 +14,7 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:text="@string/use_drop_down_to_change_min_update_interval"
         android:textColor="@android:color/black"
-        android:textSize="12sp"
+        android:textSize="@dimen/text_size"
         android:textStyle="normal" />
 
     <Button
@@ -60,67 +60,67 @@
         <TextView
             android:id="@+id/loc_label1"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".2"
+            android:layout_height="@dimen/item_height"
+            android:layout_weight=".5"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/id"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
 
         <TextView
             android:id="@+id/loc_label2"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".6"
+            android:layout_height="@dimen/item_height"
+            android:layout_weight=".7"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/provider"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
 
         <TextView
             android:id="@+id/loc_label3"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".6"
+            android:layout_height="@dimen/item_height"
+            android:layout_weight=".7"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/latitude"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
 
         <TextView
             android:id="@+id/loc_label4"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/item_height"
             android:layout_weight=".7"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/longitude"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
 
         <TextView
             android:id="@+id/loc_label5"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/item_height"
             android:layout_weight=".7"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/speed"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
 
         <TextView
             android:id="@+id/loc_label6"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/item_height"
             android:layout_weight="1"
             android:gravity="center_vertical|center_horizontal"
             android:text="@string/time"
             android:textColor="@android:color/black"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size"
             android:textStyle="normal" />
     </LinearLayout>
 
