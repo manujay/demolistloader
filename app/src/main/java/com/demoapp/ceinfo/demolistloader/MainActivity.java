@@ -19,7 +19,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +30,7 @@ import android.widget.Toast;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationContentValues;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationCursor;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationSelection;
+import com.demoapp.ceinfo.demolistloader.service.LocationService;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -57,18 +57,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     // Unique tag for the error dialog fragment
     private static final String DIALOG_ERROR = "dialog_error";
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    private boolean mRequestLocationUpdatesFused = false;
-    private boolean mRequestLocationUpdatesNotFused = false;
-    // Bool to track whether the app is already resolving an error
-    private boolean mResolvingError = false;
-    private ListView listView;
-    private LocationAdapter locationAdapter;
-    private boolean isGPSEnabled;
-    private boolean isNetworkEnabled;
-
-    private LocationManager locationManager;
+    private static final int INIT_LOADER_ID = 0;
     private final android.location.LocationListener networkLocationListener =
             new android.location.LocationListener() {
 
@@ -99,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
                 @Override
                 public void onLocationChanged(Location location) {
-                    locationManager.removeUpdates(gpsLocationListener);
+//                    locationManager.removeUpdates(gpsLocationListener);
 
                     Log.e(LOG_TAG, " @LOC_STATUS : New network location: "
                             + String.format("%9.6f", location.getLatitude()) + ", "
@@ -136,11 +125,41 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         @Override
         public void onLocationChanged(Location location) {
-            locationManager.removeUpdates(networkLocationListener);
+//            locationManager.removeUpdates(networkLocationListener);
             Log.e(LOG_TAG, " @LOC_STATUS : New GPS location: "
                     + String.format("%9.6f", location.getLatitude()) + ", "
                     + String.format("%9.6f", location.getLongitude()) + "\n");
             UpdateUI(location);
+        }
+    };
+    private GoogleApiClient mGoogleApiClient;
+    private LocationRequest mLocationRequest;
+    private boolean mRequestLocationUpdatesFused = false;
+    private boolean mRequestLocationUpdatesNotFused = false;
+    // Bool to track whether the app is already resolving an error
+    private boolean mResolvingError = false;
+    private ListView listView;
+    private LocationAdapter locationAdapter;
+    private boolean isGPSEnabled;
+    private boolean isNetworkEnabled;
+    private LocationManager locationManager;
+    private LoaderManager.LoaderCallbacks loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            LocationSelection selection = new LocationSelection();
+            return selection.getCursorLoader(MainActivity.this);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            LocationCursor c = new LocationCursor(cursor);
+            locationAdapter.swapCursor(c);
+            MainActivity.this.scrollMyListViewToBottom();
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+            locationAdapter.swapCursor(null);
         }
     };
 
@@ -153,38 +172,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 //        buildApiClient();
 //        buildLocationRequest();
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViewById();
 
+//        requestSettings();
+
         populateLoclist();
+
+        LocationService.startService(MainActivity.this);
     }
 
     private void populateLoclist() {
 
-        getSupportLoaderManager().initLoader(0, null, new LoaderManager.LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                LocationSelection selection = new LocationSelection();
-                return selection.getCursorLoader(MainActivity.this);
-            }
-
-            @Override
-            public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-                LocationCursor c = new LocationCursor(cursor);
-                locationAdapter.swapCursor(c); // let the framework handle closing of the cursor
-                MainActivity.this.scrollMyListViewToBottom();
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> loader) {
-                locationAdapter.swapCursor(null);
-            }
-        });
+        if (null == getSupportLoaderManager().getLoader(INIT_LOADER_ID)) {
+            getSupportLoaderManager().initLoader(INIT_LOADER_ID, null, loaderCallbacks);
+        } else {
+            getSupportLoaderManager().restartLoader(INIT_LOADER_ID, null, loaderCallbacks);
+        }
     }
 
     private void findViewById() {
         listView = (ListView) findViewById(R.id.loc_listview);
+        locationAdapter = new LocationAdapter(MainActivity.this, null);
+        listView.setAdapter(locationAdapter);
     }
 
     private void scrollMyListViewToBottom() {
@@ -453,17 +464,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     protected void onResume() {
         super.onResume();
 
-        requestSettings();
+//        requestSettings();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-        }
+//        switch (item.getItemId()) {
+//            // Respond to the action bar's Up/Home button
+//            case android.R.id.home:
+//                NavUtils.navigateUpFromSameTask(this);
+//                return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -514,11 +525,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        requestPermission();
+//        requestPermission();
 
-        if (mRequestLocationUpdatesFused) {
-            startLocationUpdates();
-        }
+//        if (mRequestLocationUpdatesFused) {
+//            startLocationUpdates();
+//        }
 
     }
 

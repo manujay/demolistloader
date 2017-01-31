@@ -29,16 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SettingsActivity" />
-        </activity>
+        <service
+            android:name=".service.LocationService"
+            android:exported="false" />
     </application>
-    .
-
-    <provider
-        android:name="com.demoapp.ceinfo.demolistloader.provider.SampleProvider"
-        android:authorities="com.demoapp.ceinfo.demolistloader.provider"
-        android:exported="false" />
 </manifest>

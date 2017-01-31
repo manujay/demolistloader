@@ -70,7 +70,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     // Unique tag for the error dialog fragment
     private static final String DIALOG_ERROR = "dialog_error";
     private static final String STATE_RESOLVING_ERROR = "resolving_error";
-    private static final int REQUEST_LOCATION_SETTINGS = 02011;
     private static long MIN_TIME_BW_UPDATES = 1000; // 1sec
     private final android.location.LocationListener gpsLocationListener = new android.location.LocationListener() {
 
@@ -211,9 +210,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         mRequestLocationUpdates = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_LOCATION_UPDATES, false);
 
-//        buildApiClient();
+        buildApiClient();
 
-//        buildLocationRequest(10000, 5000); //interval, fst interval
+        buildLocationRequest(10000, 5000); //interval, fst interval
 
         findViewById();
 
@@ -242,13 +241,13 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-//                buildLocationRequest(Integer.parseInt(list.get(position)), Integer.parseInt(list.get(position)) / 2);
+                buildLocationRequest(Integer.parseInt(list.get(position)), Integer.parseInt(list.get(position)) / 2);
 
                 if (mRequestLocationUpdates) {
                     stopLocationUpdates();
                 }
 
-                updateLocationMin(Integer.parseInt(list.get(position)));
+//                updateLocationMin(Integer.parseInt(list.get(position)));
             }
 
             @Override
@@ -420,14 +419,18 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private void buildLocationRequest(final int intrvl, final int fstintrvl) {
-        mLocationRequest = new LocationRequest();
+        if (null == mLocationRequest)
+            mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(intrvl);
         mLocationRequest.setFastestInterval(fstintrvl);
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
     private void startLocationUpdatesFused() {
+
+        requestSettings();
+
         // Here, thisActivity is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -531,40 +534,30 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        if (mRequestLocationUpdates) startLocationUpdates();
     }
 
     private void startLocationUpdates() {
 
-          /*if (mGoogleApiClient.isConnected() && !mRequestLocationUpdatesFused)
+        if (mGoogleApiClient.isConnected() && !mRequestLocationUpdatesFused)
             startLocationUpdatesFused();
-        else */
-        if (!mRequestLocationUpdatesNotFused)
-            startLocationUpdatesNotFused();
+//        else if (!mRequestLocationUpdatesNotFused)
+//            startLocationUpdatesNotFused();
 
-        mRequestLocationUpdates = !mRequestLocationUpdates && mRequestLocationUpdatesNotFused;
+        mRequestLocationUpdates = !mRequestLocationUpdates && mRequestLocationUpdatesFused;
         onButtonClick();
         populateLoclist();
     }
 
     @Override
     protected void onStart() {
-//        mGoogleApiClient.connect();
-//
-//        if (mGoogleApiClient.isConnected() && !mRequestLocationUpdates) { //does not work since mGoogleApiClient.isConnected return false
-//            startLocationUpdates();
-//        }
-
+        mGoogleApiClient.connect();
         super.onStart();
     }
 
     @Override
     protected void onStop() {
-
-//        if (mGoogleApiClient.isConnected() && mRequestLocationUpdates) {
-//        stopLocationUpdates();
-//        }
-
-//        mGoogleApiClient.disconnect();//disconnect after
+        mGoogleApiClient.disconnect();
         super.onStop();
     }
 
@@ -585,11 +578,11 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     }
 
     private void stopLocationUpdates() {
-//        if (mGoogleApiClient.isConnected() && mRequestLocationUpdatesFused)//stop location updates
-//            stopLocationUpdatesFused();
+        if (mGoogleApiClient.isConnected() && mRequestLocationUpdatesFused)//stop location updates
+            stopLocationUpdatesFused();
 //        else
-        if (mRequestLocationUpdatesNotFused)
-            stopLocationUpdatesNotFused();
+//        if (mRequestLocationUpdatesNotFused)
+//            stopLocationUpdatesNotFused();
         mRequestLocationUpdates = false;
         onButtonClick();
     }
@@ -618,7 +611,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 // No explanation needed, we can request the permission.
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                         MY_PERMISSIONS_FINE_COARSE);
             }
         }
@@ -636,6 +629,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnectionSuspended(int i) {
+
+        if (mRequestLocationUpdates)
+            stopLocationUpdates();
 
     }
 
