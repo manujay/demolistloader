@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.demoapp.ceinfo.demolistloader.SharedPrefHelper;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationContentValues;
 
 /**
@@ -24,8 +26,8 @@ import com.demoapp.ceinfo.demolistloader.provider.location.LocationContentValues
 
 public class LocationService extends Service {
 
-    private static final long MIN_INTERVAL_IN_MILS = 1000;
     private static final float MIN_DISTANCE_IN_MTRS = 0;
+    private static long MIN_INTERVAL_IN_MILS = 1000;
     private static String LOG_TAG = LocationService.class.getSimpleName();
     private ServiceThread thread = null;
 
@@ -72,6 +74,9 @@ public class LocationService extends Service {
         private Context context = null;
         private Handler handler = null;
         private LocationManager locationManager = null;
+        private boolean isGPSEnabled;
+        private boolean isNetworkEnabled;
+        private SharedPreferences pref;
         private LocationListener networklistener = new LocationListener() {
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -142,8 +147,26 @@ public class LocationService extends Service {
                 UpdateUI(location);
             }
         };
-        private boolean isGPSEnabled;
-        private boolean isNetworkEnabled;
+        private SharedPreferences.OnSharedPreferenceChangeListener onSharedPreferenceChangeListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            @Override
+            public void onSharedPreferenceChanged(SharedPreferences preferences, String key) {
+
+                if (key.equals(SharedPrefHelper.BOOLEAN_REQUESTING_UPDATES)) {
+                    if (pref.getBoolean(SharedPrefHelper.BOOLEAN_REQUESTING_UPDATES, false))
+                        startLocationUpdates();
+                    else
+                        stopLocationUpdates();
+                }
+
+                if (key.equals(SharedPrefHelper.LONG_MIN_INTERVAL_UPDATES)) {
+                    updateInterval(pref.getLong(SharedPrefHelper.LONG_MIN_INTERVAL_UPDATES, 0));
+                }
+            }
+        };
+
+        private void updateInterval(long intrvl) {
+            MIN_INTERVAL_IN_MILS = intrvl;
+        }
 
         private void UpdateUI(Location location) {
 
@@ -248,6 +271,8 @@ public class LocationService extends Service {
             locationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
             isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            pref = SharedPrefHelper.getDefaultSharedPref(context);
+            pref.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
 
             startLocationUpdates();
 
@@ -256,6 +281,8 @@ public class LocationService extends Service {
             Log.e(LOG_TAG, " @mky:Stoping Location Updates");
 
             stopLocationUpdates();
+
+            pref.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener);
         }
     }
 }
