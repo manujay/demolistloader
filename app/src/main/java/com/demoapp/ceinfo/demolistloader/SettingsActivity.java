@@ -423,8 +423,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(intrvl);
         mLocationRequest.setFastestInterval(fstintrvl);
-
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setSmallestDisplacement(MIN_DISTANCE_BW_UPDATES);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     private void startLocationUpdatesFused() {
@@ -501,7 +501,7 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MIN_TIME_BW_UPDATES, MIN_DISTANCE_BW_UPDATES, networkLocationListener);
 
-            mRequestLocationUpdatesNotFused = !mRequestLocationUpdatesNotFused; //requesting not fused
+            mRequestLocationUpdatesNotFused = true; //requesting not fused
         }
     }
 
@@ -534,7 +534,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        if (mRequestLocationUpdates) startLocationUpdates();
+        if (mGoogleApiClient.isConnected() && mRequestLocationUpdatesFused)
+            startLocationUpdatesFused();
     }
 
     private void startLocationUpdates() {
@@ -544,9 +545,8 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 //        else if (!mRequestLocationUpdatesNotFused)
 //            startLocationUpdatesNotFused();
 
-        mRequestLocationUpdates = !mRequestLocationUpdates && mRequestLocationUpdatesFused;
+        mRequestLocationUpdates = true;
         onButtonClick();
-        populateLoclist();
     }
 
     @Override
@@ -629,10 +629,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onConnectionSuspended(int i) {
-
-        if (mRequestLocationUpdates)
-            stopLocationUpdates();
-
     }
 
     @Override
