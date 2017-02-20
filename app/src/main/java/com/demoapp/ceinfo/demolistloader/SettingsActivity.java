@@ -338,8 +338,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
 
-                showToast(" : Request location Permission Coarse : ");
-
             } else {
 
                 // No explanation needed, we can request the permission.
@@ -439,8 +437,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                showToast(" : Request location Permission Coarse : ");
 
             } else {
 

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
             LocationCursor c = new LocationCursor(cursor);
-            locationAdapter.swapCursor(c);
+            locationAdapter.changeCursor(c);
             MainActivity.this.scrollMyListViewToBottom();
         }
 
