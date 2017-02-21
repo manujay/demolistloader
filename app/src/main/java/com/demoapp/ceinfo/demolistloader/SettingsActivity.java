@@ -57,7 +57,7 @@ import java.util.List;
  * Created by ceinfo on 25-01-2017.
  */
 
-public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class SettingsActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
     private static final int INIT_LOADER_ID = 0;
@@ -474,9 +474,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 // Should we show an explanation?
                 if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                         Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                    showToast(" : Request location Permission Coarse : ");
-
                 } else {
 
                     // No explanation needed, we can request the permission.
@@ -599,9 +596,6 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)) {
-
-                showToast(" : Request location Permission Coarse : ");
-
             } else {
 
                 // No explanation needed, we can request the permission.
@@ -692,6 +686,18 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(SettingsActivity.this, permissions[0])) {
+                requestSettings();
+            }
+        }
+
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     /* A fragment to display an error dialog */
