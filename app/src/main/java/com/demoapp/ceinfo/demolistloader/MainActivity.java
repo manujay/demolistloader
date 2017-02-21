@@ -15,7 +15,7 @@ import android.widget.Spinner;
 import com.demoapp.ceinfo.demolistloader.fragments.UserLocationFragment;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationCursor;
 import com.demoapp.ceinfo.demolistloader.provider.location.LocationSelection;
-import com.demoapp.ceinfo.demolistloader.service.LocationService;
+import com.demoapp.ceinfo.demolistloader.service.LocationUpdateJobService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
 
         startLocationUpdates();
 
-        LocationService.startService(MainActivity.this);
+//        LocationService.startService(MainActivity.this);
+        LocationUpdateJobService.startJobService(MainActivity.this);
     }
 
     private void populateLoclist() {

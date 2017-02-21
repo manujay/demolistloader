@@ -1,3 +1,5 @@
+package com.demoapp.ceinfo.demolistloader.service;
+
 import android.app.job.JobInfo;
 import android.app.job.JobParameters;
 import android.app.job.JobScheduler;
@@ -31,7 +33,7 @@ public class LocationUpdateJobService extends JobService {
     private static int kid = 0;
     private ServiceThread thread = null;
 
-    private LocationUpdateJobService() {
+    public LocationUpdateJobService() {
     }
 
     public static void startJobService(Context context) {
